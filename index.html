@@ -170,13 +170,11 @@
     document.getElementById("finalText").innerHTML = `<strong>${finalMessage}</strong>`;
 
     function setYesScale() {
-      yesBtn.style.transform = `scale(${yesScale})`;
-
-    // 🔽 New: reserve vertical space so the big YES never overlaps text above
-    const base = 80;              // starting height
-    const extra = (yesScale - 1) * 60;  // how much space to add as it grows
-    btnRow.style.setProperty("--rowH", `${base + extra}px`);
+      // move down a bit as it grows
+      const y = Math.min(60, (yesScale - 1) * 18);
+      yesBtn.style.transform = `translateY(${y}px) scale(${yesScale})`;
     }
+
 
 
     function moveNoButton() {
