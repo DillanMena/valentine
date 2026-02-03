@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>💘 Valentine?</title>
+  <style>
+    :root {
+      --bg1: #ffdde1;
+      --bg2: #ee9ca7;
+      --card: rgba(255,255,255,0.75);
+      --text: #1f1f1f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at top, var(--bg1), var(--bg2));
+      overflow: hidden;
+      color: var(--text);
+    }
+    .card {
+      width: min(560px, 92vw);
+      padding: 28px 22px;
+      border-radius: 22px;
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 55px rgba(0,0,0,.18);
+      text-align: center;
+      position: relative;
+    }
+    h1 { margin: 0 0 10px; font-size: 2rem; }
+    p { margin: 0 0 18px; font-size: 1.05rem; opacity: .9; }
+
+    .btn-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      position: relative;
+      min-height: 70px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: transform .15s ease, filter .15s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:active { transform: scale(0.98); }
+
+    #yesBtn {
+      background: #ff3b81;
+      color: white;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(255, 59, 129, .35);
+      transform-origin: center;
+    }
+    #yesBtn:hover { filter: brightness(1.03); }
+
+    #noBtn {
+      background: rgba(0,0,0,0.08);
+      color: rgba(0,0,0,0.72);
+      font-weight: 600;
+      position: relative;
+    }
+
+    .final {
+      display: none;
+      margin-top: 10px;
+      font-size: 1.15rem;
+      line-height: 1.35;
+    }
+    .final .big {
+      font-size: 3.25rem;
+      margin: 10px 0 6px;
+    }
+
+    /* Confetti */
+    .confetti {
+      position: absolute;
+      inset: -10vh -10vw auto -10vw;
+      width: 120vw;
+      height: 120vh;
+      pointer-events: none;
+      overflow: visible;
+      display: none;
+    }
+    .piece {
+      position: absolute;
+      top: -10px;
+      width: 10px;
+      height: 16px;
+      opacity: .95;
+      border-radius: 3px;
+      animation: fall linear forwards;
+      will-change: transform;
+    }
+    @keyframes fall {
+      to {
+        transform: translate(var(--dx), 110vh) rotate(var(--rot));
+      }
+    }
+
+    .hint {
+      margin-top: 12px;
+      font-size: 0.92rem;
+      opacity: .75;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <h1 id="title">Will you be my Valentine? 💘</h1>
+    <p id="subtitle">I made this just for you.</p>
+
+    <div class="btn-row" id="btnRow">
+      <button id="yesBtn">Yes 😍</button>
+      <button id="noBtn">No 🙄</button>
+    </div>
+
+    <div class="final" id="final">
+      <div class="big">🎉💖🎉</div>
+      <div id="finalText"><strong>YAY!!!</strong> See you on Valentine’s Day 💌</div>
+    </div>
+
+    <div class="hint" id="hint">P.S. the “No” button is… unreliable 😅</div>
+
+    <div class="confetti" id="confetti"></div>
+  </div>
+
+  <script>
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const final = document.getElementById("final");
+    const btnRow = document.getElementById("btnRow");
+    const confetti = document.getElementById("confetti");
+    const hint = document.getElementById("hint");
+
+    let noCount = 0;
+    let yesScale = 1;
+
+    // Customize these:
+    const herName = ""; // e.g. "Sofia"
+    const finalMessage = "YAY!!! See you on Valentine’s Day 💌";
+    if (herName) {
+      document.getElementById("subtitle").textContent = `Hey ${herName}… I have a question 😳`;
+    }
+    document.getElementById("finalText").innerHTML = `<strong>${finalMessage}</strong>`;
+
+    function setYesScale() {
+      yesBtn.style.transform = `scale(${yesScale})`;
+    }
+
+    function moveNoButton() {
+      // Make the No button "dodge" a bit (still tappable)
+      const rowRect = btnRow.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      // Constrain movement within the button row area
+      const maxX = Math.max(0, rowRect.width - btnRect.width);
+      const maxY = 22; // small vertical wiggle
+
+      const x = Math.random() * maxX;
+      const y = (Math.random() * maxY) - maxY/2;
+
+      noBtn.style.position = "absolute";
+      noBtn.style.left = `${x}px`;
+      noBtn.style.top = `${y}px`;
+    }
+
+    function launchConfetti() {
+      confetti.style.display = "block";
+      confetti.innerHTML = "";
+      const pieces = 120;
+
+      for (let i = 0; i < pieces; i++) {
+        const p = document.createElement("div");
+        p.className = "piece";
+        const left = Math.random() * 100;
+        const delay = Math.random() * 0.25;
+        const dur = 1.6 + Math.random() * 1.6;
+
+        const dx = (Math.random() * 2 - 1) * 40 + "vw";
+        const rot = (Math.random() * 2 - 1) * 720 + "deg";
+
+        p.style.left = left + "vw";
+        p.style.animationDuration = dur + "s";
+        p.style.animationDelay = delay + "s";
+        p.style.setProperty("--dx", dx);
+        p.style.setProperty("--rot", rot);
+
+        // random color
+        const colors = ["#ff3b81","#ffcc00","#00d4ff","#7c4dff","#00c853","#ff6d00"];
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+        confetti.appendChild(p);
+      }
+
+      // stop after a bit
+      setTimeout(() => {
+        confetti.style.display = "none";
+        confetti.innerHTML = "";
+      }, 3500);
+    }
+
+    noBtn.addEventListener("click", () => {
+      noCount++;
+
+      // make YES bigger each "No"
+      // growth curve: fast at first, then still grows
+      yesScale = Math.min(6, 1 + noCount * 0.35);
+      setYesScale();
+
+      // optional: make No dodge after a couple clicks
+      if (noCount >= 2) moveNoButton();
+
+      // optional text changes
+      const lines = [
+        "Are you sure? 🥺",
+        "Really sure?? 😭",
+        "Okay but… what if I say please 😳",
+        "This is getting suspicious… 😅",
+        "There is only one correct answer 😌"
+      ];
+      document.getElementById("subtitle").textContent = lines[Math.min(noCount - 1, lines.length - 1)];
+    });
+
+    yesBtn.addEventListener("click", () => {
+      btnRow.style.display = "none";
+      hint.style.display = "none";
+      final.style.display = "block";
+      launchConfetti();
+      document.getElementById("title").textContent = "LET’S GOOO 💘";
+    });
+
+    // initial
+    setYesScale();
+  </script>
+</body>
+</html>
