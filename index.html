@@ -149,8 +149,8 @@
     let yesScale = 1;
 
     // Customize these:
-    const herName = ""; // e.g. "Sofia"
-    const finalMessage = "YAY!!! See you on Valentine’s Day 💌";
+    const herName = "Kaitlyn"; 
+    const finalMessage = "YAY!!! I Love you Valentine! 💌";
     if (herName) {
       document.getElementById("subtitle").textContent = `Hey ${herName}… I have a question 😳`;
     }
@@ -226,10 +226,10 @@
       // optional text changes
       const lines = [
         "Are you sure? 🥺",
-        "Really sure?? 😭",
+        "Really sure? 😭",
         "Okay but… what if I say please 😳",
-        "This is getting suspicious… 😅",
-        "There is only one correct answer 😌"
+        "This is getting embarrasing… 😅",
+        "That isn't the right answer 😌"
       ];
       document.getElementById("subtitle").textContent = lines[Math.min(noCount - 1, lines.length - 1)];
     });
@@ -239,7 +239,7 @@
       hint.style.display = "none";
       final.style.display = "block";
       launchConfetti();
-      document.getElementById("title").textContent = "LET’S GOOO 💘";
+      document.getElementById("title").textContent = "FINALLY!!! 💘";
     });
 
     // initial
